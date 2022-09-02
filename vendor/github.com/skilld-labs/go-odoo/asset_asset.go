@@ -55,6 +55,7 @@ type AssetAsset struct {
 	AssetDocumentsFormsIds                        *Relation  `xmlrpc:"asset_documents_forms_ids,omptempty"`
 	AssetDocumentsIds                             *Relation  `xmlrpc:"asset_documents_ids,omptempty"`
 	AssetGaugeIds                                 *Relation  `xmlrpc:"asset_gauge_ids,omptempty"`
+	GaugeNewLine                                  *Relation  `xmlrpc:"gauge_new_lines,omptempty"`
 	AssetGrandInId                                *Many2One  `xmlrpc:"asset_grand_in_id,omptempty"`
 	AssetHierarchy                                *Selection `xmlrpc:"asset_hierarchy,omptempty"`
 	AssetHorizonId                                *Many2One  `xmlrpc:"asset_horizon_id,omptempty"`

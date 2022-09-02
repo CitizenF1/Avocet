@@ -1,6 +1,7 @@
 package main
 
-type Downtime struct {
+type DowntimeUpdate struct {
+	AssetID        int64
 	Item_name      string
 	Start_datetime string
 	End_datetime   string
@@ -11,6 +12,7 @@ type Downtime struct {
 }
 
 type Pstn struct {
+	AssetID        int64
 	Item_name      string
 	Start_datetime string
 	Pressure       string
@@ -21,13 +23,14 @@ type Pstn struct {
 }
 
 type WaterVol struct {
+	AssetID  int64
 	Name     string
 	Date     string
 	WaterVol string
 }
 
 type WellTest struct {
-	Name             string // CHANGE TO ID
+	ID               int64 // CHANGE TO ID
 	Date             string
 	CassingPressure1 float64
 	CassingPressure2 float64
@@ -40,18 +43,4 @@ type WellTest struct {
 	PumpEfficiency   float64
 	WHPerss          float64
 	WHTemp           float64
-}
-
-type Wells struct {
-	WELLNAME      string
-	RUS_FORMATION string
-	PRODUCT       string
-	BATTERY       string
-	DOME          string
-	PERIOD        string
-	RUS_ASSET     string
-	FACILITY      string
-	RUS_LIFT_TYPE string
-	PUMP_MODEL    string
-	RUS_WELLTYPE  string
 }

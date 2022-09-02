@@ -11,13 +11,14 @@ An Odoo API client enabling Go programs to interact with Odoo in a simple and un
 
 ### Generate your models
 
+**Note: Generating models require to follow instructions in GOPATH mode. Refactoring for go modules will come soon.**
 
 Define the environment variables to be able to connect to your odoo instance :
 
 (Don't set `ODOO_MODELS` if you want all your models to be generated)
 
 ```
-export ODOO_ADMIN=admin
+export ODOO_ADMIN=admin // ensure the user has sufficient permissions to generate models
 export ODOO_PASSWORD=password
 export ODOO_DATABASE=odoo
 export ODOO_URL=http://localhost:8069
@@ -31,13 +32,27 @@ export ODOO_REPO_PATH=$(echo $GOPATH | awk -F ':' '{ print $1 }')/src/github.com
 
 Download library and generate models :
 ```
-go get github.com/skilld-labs/go-odoo
+GO111MODULE="off" go get github.com/skilld-labs/go-odoo
 cd $ODOO_REPO_PATH
 ls | grep -v "conversion.go\|generator\|go.mod\|go-odoo-generator\|go.sum\|ir_model_fields.go\|ir_model.go\|LICENSE\|odoo.go\|README.md\|types.go\|version.go" // keep only go-odoo core files
-go generate
+GO111MODULE="off" go generate
 ```
 
 That's it ! Your models have been generated !
+
+### Current generated models
+
+#### Core models
+
+Core models are `ir_model.go` and `ir_model_fields.go` since there are used to generate models.
+
+It is **highly recommanded** to not remove them, since you would not be able to generate models again.
+
+#### Custom skilld-labs models
+
+All others models (not core one) are specific to skilld-labs usage. They use our own odoo instance which is **version 11**. (note that models structure changed between odoo major versions).
+
+If you're ok to work with those models, you can use this library instance, if not you should fork the repository and generate you own models by following steps above.
 
 ### Enjoy coding!
 
@@ -45,7 +60,7 @@ That's it ! Your models have been generated !
 
 ```go
 package main
-	
+
 import (
 	odoo "github.com/skilld-labs/go-odoo"
 )
@@ -162,7 +177,7 @@ cls, err := c.FindCrmLeads(odoo.NewCriteria().Add("user_id.name", "=", "John Doe
 
 ## Low level functions
 
-All high level functions are based on basic odoo webservices functions. 
+All high level functions are based on basic odoo webservices functions.
 
 These functions give you more flexibility but less usability. We recommand you to use models functions (high level).
 

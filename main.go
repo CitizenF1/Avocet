@@ -1,34 +1,25 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
+	"os"
+	"sync"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	go_odoo "github.com/skilld-labs/go-odoo"
 )
 
-var (
-	ClientOdoo go_odoo.Client
-)
-
-var (
-	odooLogin    = "LOGIN"
-	odooPassword = "PASSWORD"
-	odooDatabase = "DATABASE"
-	odooUrl      = "URL"
-)
-
-var (
-	server   = "SERVERADDRES"
-	port     = 1433
-	user     = "USER"
-	password = "PASSWORD"
-	database = "DATABASE"
-)
+var wg sync.WaitGroup
 
 func main() {
+	// ====Route log to file====
+	f, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer f.Close()
+	log.SetOutput(f)
 	odooClientOdoo, err := go_odoo.NewClient(&go_odoo.ClientConfig{
 		Admin:    odooLogin,
 		Password: odooPassword,
@@ -37,47 +28,60 @@ func main() {
 	})
 	if err != nil {
 		fmt.Println("[Odoo connection] error: ", err)
-		// return err
 	}
 	ClientOdoo = *odooClientOdoo
 
-	// GetWellReadings()
-	// GetWaterVolQuery()
-	// getDowtimeReadingsQuery()
-	// DailyProductionWells()
-	// wellsPressureQuery()
-	// ofm_master()
-	// getPSTN()
-	// WellsPressureQuery()
+	WorkWellDowtimes()
+
+	WorkWellReadings()
+
+	WorkWellWaterVols()
+
+	wg.Wait()
+	fmt.Println("Done")
 }
 
-func databaseConnection() *sql.DB {
-	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d;database=%s;",
-		server, user, password, port, database)
-
-	conn, err := sql.Open("mssql", connString)
-	if err != nil {
-		log.Fatal("Open connection failed:", err.Error())
+func WorkWellReadings() {
+	wells := FindInjectionWells()
+	for _, v := range wells {
+		wg.Add(1)
+		fmt.Println("+=====================================+")
+		fmt.Println("|  Checking for update.........  |")
+		fmt.Printf("LastUpdate: %s, ID: %v, WellType: %s, Number: %s --Устьевые показания--\n", v.LastUpdateDate, v.ID, v.WellType, v.WellNumber)
+		fmt.Println("+=====================================+")
+		go func(v WellsUpdate) {
+			defer wg.Done()
+			GetWellInjectReadings(v.WellNumber, v.LastUpdateDate, v.ID)
+		}(v)
 	}
-	fmt.Printf("Connected!\n")
-	return conn
 }
 
-type DowntimeType struct {
-	Downtime_type string
-	Downtime_text string
+func WorkWellDowtimes() {
+	wells := GetDowntimeWellsOdoo()
+	for _, v := range wells {
+		wg.Add(1)
+		fmt.Println("+=====================================+")
+		fmt.Println("|  Checking for update.........  |")
+		fmt.Printf("LastUpdate: %s, ID: %v, Number: %s -----Простои Скважин-----\n", v.LastUpdateDate, v.ID, v.WellNumber)
+		fmt.Println("+=====================================+")
+		go func(v DowntimeWellsOdoo) {
+			defer wg.Done()
+			GetDowtimeReadings(v.WellNumber, v.LastUpdateDate, v.ID)
+		}(v)
+	}
 }
 
-// SELECT DISTINCT [DOWNTIME_TYPE]
-//       ,[DOWNTIME_TYPE_TEXT]
-//   FROM [AVM_CN].[dbo].[VT_DOWNTIME_en_US]
-
-//--------CREATE тип насоса----------
-// value := make(map[string]interface{})
-// value["name"] = "ПНШ-60"
-// value["production_method"] = "2"
-// id, err := ClientOdoo.Create("asset.pump.type", value)
-// if err != nil {
-// 	fmt.Println(err)
-// }
-// fmt.Println(id)
+func WorkWellWaterVols() {
+	wells := FindWaterVolsWells()
+	for _, v := range wells {
+		wg.Add(1)
+		fmt.Println("+=====================================+")
+		fmt.Println("|  Checking for update.........  |")
+		fmt.Printf("LastUpdate: %s, ID: %v, Number: %s ----Закачка воды----\n", v.LastUpdateDate, v.ID, v.WellNumber)
+		fmt.Println("+=====================================+")
+		go func(v WellsUpdate) {
+			defer wg.Done()
+			GetWaterVolQuery(v.WellNumber, v.LastUpdateDate, v.ID)
+		}(v)
+	}
+}
