@@ -1,0 +1,6 @@
+2022/09/02 17:00:35 unable to open tcp connection with host '172.16.20.28:1433': dial tcp 172.16.20.28:1433: i/o timeout
+2022/09/02 17:00:35 unable to open tcp connection with host '172.16.20.28:1433': dial tcp 172.16.20.28:1433: i/o timeout
+2022/09/05 15:54:57 client is not authenticate
+2022/09/05 19:15:29 ERROR SQL Query: sql: database is closed
+2022/09/06 11:33:27 sql: database is closed
+2022/09/06 11:33:27 sql: database is closed
