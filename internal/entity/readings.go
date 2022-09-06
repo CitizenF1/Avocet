@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// Показания датчиков на нагнетательных скважинах
+// Запрос в базу данных avocet из таблицы VT_WELL_READ_ru_RU Показания датчиков на нагнетательных скважинах
 func InjectReadingsQuery(well models.LastUpdates) error {
 	rows, err := db.Conn.Query(`SELECT ITEM_NAME
 	,START_DATETIME,CASING_PRESS1,CASING_PRESS2,CASING_PRESS3
@@ -50,12 +50,12 @@ WHERE START_DATETIME > ? AND ITEM_NAME = ?`, well.LastUpdateDate, well.WellNumbe
 			WHTemp:           WHTemp.Float64,
 		})
 	}
-	defer setGauges(wellTests)
+	defer writeGaugesOdoo(wellTests)
 	return nil
 }
 
-// Запись xlmrpc odoo
-func setGauges(welltest []models.WellReadings) {
+// Запись xlmrpc odoo в таблицу asset.gauge.new
+func writeGaugesOdoo(welltest []models.WellReadings) {
 	if len(welltest) != 0 {
 		for _, well := range welltest {
 			date, err := time.Parse("2006-01-02T15:04:05Z", well.Date)

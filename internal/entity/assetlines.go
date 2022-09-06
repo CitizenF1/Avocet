@@ -23,11 +23,11 @@ func GetUpdateByAssetLine(assetType, assetFields string) []models.LastUpdates {
 			wellnumber := reg.FindString(asset.Name.Get())
 			switch assetFields {
 			case "water_vol_lines":
-				updates = append(updates, WaterVolLines(asset, wellnumber))
+				updates = append(updates, waterVolLines(asset, wellnumber))
 			case "gauge_new_lines":
-				updates = append(updates, GaugesLines(asset, wellnumber))
+				updates = append(updates, gaugesLines(asset, wellnumber))
 			case "downtime_ids":
-				updates = append(updates, DowntimeIds(asset, wellnumber))
+				updates = append(updates, downtimeIds(asset, wellnumber))
 			}
 		}
 	}
@@ -35,7 +35,7 @@ func GetUpdateByAssetLine(assetType, assetFields string) []models.LastUpdates {
 }
 
 //lastupdate обновления в модели asset.readings.downtime
-func DowntimeIds(asset go_odoo.AssetAsset, wellnumber string) models.LastUpdates {
+func downtimeIds(asset go_odoo.AssetAsset, wellnumber string) models.LastUpdates {
 	var updates models.LastUpdates
 	if len(asset.DowntimeIds.Get()) != 0 {
 		downtime, err := odoo.ClientOdoo.GetAssetReadingsDowntime(asset.DowntimeIds.Get()[len(asset.DowntimeIds.Get())-1])
@@ -58,7 +58,7 @@ func DowntimeIds(asset go_odoo.AssetAsset, wellnumber string) models.LastUpdates
 }
 
 // lastupdate обновления в модели asset.water.vol
-func WaterVolLines(asset go_odoo.AssetAsset, wellnumber string) models.LastUpdates {
+func waterVolLines(asset go_odoo.AssetAsset, wellnumber string) models.LastUpdates {
 	var update models.LastUpdates
 	if len(asset.WaterVolLines.Get()) != 0 {
 		waterVol, err := odoo.ClientOdoo.GetAssetWaterVol(asset.WaterVolLines.Get()[len(asset.WaterVolLines.Get())-1])
@@ -85,7 +85,7 @@ func WaterVolLines(asset go_odoo.AssetAsset, wellnumber string) models.LastUpdat
 }
 
 // lastupdate обновления в модели asset.gauge.new
-func GaugesLines(asset go_odoo.AssetAsset, wellnumber string) models.LastUpdates {
+func gaugesLines(asset go_odoo.AssetAsset, wellnumber string) models.LastUpdates {
 	var updates models.LastUpdates
 	if len(asset.GaugeNewLine.Get()) != 0 {
 		gauges, err := odoo.ClientOdoo.GetAssetGaugeNew(asset.GaugeNewLine.Get()[len(asset.GaugeNewLine.Get())-1])

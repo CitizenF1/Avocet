@@ -44,11 +44,11 @@ func WaterVolQuery(well models.LastUpdates) error {
 			WaterVol: WATER_VOL.String,
 		})
 	}
-	setWaterVol(waterVols)
+	writeWaterVolOdoo(waterVols)
 	return nil
 }
 
-func setWaterVol(waters []models.WaterVol) {
+func writeWaterVolOdoo(waters []models.WaterVol) {
 	// ID единицы измерения закачки воды "m3"
 	waterVolUom := 20
 	if len(waters) != 0 {

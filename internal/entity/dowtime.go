@@ -39,11 +39,11 @@ func DowtimeQuery(well models.LastUpdates) error {
 			Comment:        dow.Comment,
 		})
 	}
-	setDowtimeReadings(downtimes)
+	writeDowtimeReadingsOdoo(downtimes)
 	return nil
 }
 
-func setDowtimeReadings(downtimes []models.DowntimeUpdate) {
+func writeDowtimeReadingsOdoo(downtimes []models.DowntimeUpdate) {
 	if len(downtimes) != 0 {
 		for _, downtime := range downtimes {
 			Update := make(map[string]interface{})
