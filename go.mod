@@ -9,7 +9,7 @@ require (
 
 require (
 	github.com/kolo/xmlrpc v0.0.0-20201022064351-38db28db192b // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/text v0.3.8 // indirect
 )
 
 require (
